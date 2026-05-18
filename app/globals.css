@@ -21,19 +21,6 @@
   --status-overdue-text: #991b1b;
 }
 
-[data-theme="dark"] {
-  --bg-main: #111827;
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
-  --border-light: #374151;
-  --status-pending-bg: rgba(133, 77, 14, 0.4);
-  --status-pending-text: #fde047;
-  --status-paid-bg: rgba(22, 101, 52, 0.4);
-  --status-paid-text: #86efac;
-  --status-overdue-bg: rgba(153, 27, 27, 0.4);
-  --status-overdue-text: #fca5a5;
-}
-
 * {
   box-sizing: border-box;
   padding: 0;
@@ -176,11 +163,6 @@ p.subtitle {
   box-shadow: inset -1px 0 0 var(--border-light), 2px 0 5px rgba(0,0,0,0.02);
 }
 
-[data-theme="dark"] .data-table th:first-child,
-[data-theme="dark"] .data-table td:first-child {
-  box-shadow: inset -1px 0 0 var(--border-light), 2px 0 5px rgba(0,0,0,0.3);
-}
-
 /* Status Badges */
 .status-badge {
   display: inline-block;
@@ -200,29 +182,6 @@ p.subtitle {
 .status-paid { background-color: var(--status-paid-bg); color: var(--status-paid-text); }
 .status-pending { background-color: var(--status-pending-bg); color: var(--status-pending-text); }
 .status-overdue { background-color: var(--status-overdue-bg); color: var(--status-overdue-text); }
-
-/* Theme Toggle Button */
-.theme-toggle-btn {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  background: var(--border-light);
-  border: 1px solid var(--text-muted);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  cursor: pointer;
-  z-index: 100;
-  transition: transform 0.2s;
-}
-
-.theme-toggle-btn:hover {
-  transform: scale(1.1);
-}
 
 /* Utility */
 .icon-btn {
