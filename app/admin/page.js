@@ -91,10 +91,10 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <main className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-        <form onSubmit={handleLogin} className="glass-panel" style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ textAlign: 'center' }}>
-            <h2>Admin Access</h2>
-            <p className="subtitle" style={{ margin: '0.5rem 0' }}>Enter PIN to continue</p>
+        <form onSubmit={handleLogin} className="auth-panel">
+          <div>
+            <h1>Admin Access</h1>
+            <p className="subtitle" style={{ margin: '0' }}>Enter PIN to continue</p>
           </div>
           <input 
             type="password" 
@@ -104,9 +104,9 @@ export default function AdminPage() {
             onChange={(e) => setPin(e.target.value)} 
             autoFocus 
           />
-          {error && <p style={{ color: 'var(--danger)', fontSize: '0.875rem', textAlign: 'center' }}>{error}</p>}
+          {error && <p style={{ color: 'var(--status-overdue)', fontSize: '0.875rem' }}>{error}</p>}
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button type="button" onClick={() => window.location.href='/'} className="btn btn-secondary" style={{ flex: 1, textAlign: 'center' }}>Back</button>
+            <button type="button" onClick={() => window.location.href='/'} className="btn btn-secondary" style={{ flex: 1 }}>Back</button>
             <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Login</button>
           </div>
         </form>
@@ -122,80 +122,66 @@ export default function AdminPage() {
 
   return (
     <main className="container">
-      <div className="navbar">
-        <h1 style={{ margin: 0 }}>Admin Dashboard</h1>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn btn-primary" onClick={handleAddMember}>+ Add Member</button>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+        <h1>
+          <span className="title-line">Admin</span>
+          <span className="title-line">Dashboard</span>
+        </h1>
+        <button className="btn btn-primary" onClick={handleAddMember}>+ Add</button>
       </div>
       
-      {loading && <div style={{ textAlign: 'center', margin: '2rem 0' }}>Loading data...</div>}
+      {loading && <div style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>Loading data...</div>}
 
-      <div className="glass-panel">
-        <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>
-          Click on any status badge to toggle between Pending, Overdue, and Paid. Click on the ✎ or × to edit or delete members.
-        </p>
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Member</th>
-                {months.map(m => (
-                  <th key={m.monthYear}>{m.display}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {members.map(member => (
-                <tr key={member.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontWeight: 600 }}>{member.name}</span>
-                      <button onClick={() => handleEditMember(member.id, member.name)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }} title="Edit">✎</button>
-                      <button onClick={() => handleDeleteMember(member.id)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer' }} title="Delete">×</button>
-                    </div>
-                  </td>
-                  {months.map(m => {
-                    const rec = recordMap[member.id]?.[m.monthYear];
-                    const status = rec?.status || 'Pending';
-                    
-                    let badgeClass = 'status-pending';
-                    let icon = '🕒 ';
-                    if (status === 'Paid') {
-                      badgeClass = 'status-paid';
-                      icon = '✓ ';
-                    }
-                    if (status === 'Overdue') {
-                      badgeClass = 'status-overdue';
-                      icon = '⚠ ';
-                    }
-
-                    return (
-                      <td key={m.monthYear}>
-                        <span 
-                          className={`status-badge ${badgeClass}`} 
-                          style={{ cursor: 'pointer', transition: 'transform 0.1s' }}
-                          onClick={() => handleStatusClick(member.id, m.monthYear, status)}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                          {icon}{status}
-                        </span>
-                      </td>
-                    );
-                  })}
-                </tr>
+      <div className="data-table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Member</th>
+              {months.map(m => (
+                <th key={m.monthYear}>{m.display}</th>
               ))}
-              {members.length === 0 && !loading && (
-                <tr>
-                  <td colSpan={13} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                    No members yet. Click "+ Add Member" to get started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            </tr>
+          </thead>
+          <tbody>
+            {members.map(member => (
+              <tr key={member.id}>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>{member.name}</span>
+                    <button onClick={() => handleEditMember(member.id, member.name)} className="icon-btn" title="Edit">✎</button>
+                    <button onClick={() => handleDeleteMember(member.id)} className="icon-btn" style={{ color: 'var(--status-overdue)' }} title="Delete">×</button>
+                  </div>
+                </td>
+                {months.map(m => {
+                  const rec = recordMap[member.id]?.[m.monthYear];
+                  const status = rec?.status || 'Pending';
+                  
+                  let statusClass = 'status-pending';
+                  if (status === 'Paid') statusClass = 'status-paid';
+                  if (status === 'Overdue') statusClass = 'status-overdue';
+
+                  return (
+                    <td key={m.monthYear}>
+                      <span 
+                        className={`status-text ${statusClass}`} 
+                        onClick={() => handleStatusClick(member.id, m.monthYear, status)}
+                      >
+                        {status}
+                      </span>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+            {members.length === 0 && !loading && (
+              <tr>
+                <td colSpan={13} style={{ padding: '2rem 0', color: 'var(--text-muted)' }}>
+                  No members yet. Click "+ Add" to get started.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </main>
   );

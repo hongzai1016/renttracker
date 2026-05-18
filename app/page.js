@@ -32,67 +32,55 @@ export default async function Dashboard() {
 
   return (
     <main className="container">
-      <div className="navbar">
-        <h1 style={{ margin: 0 }}>RentTrack</h1>
-      </div>
-
-      <p className="subtitle">Track rent statuses across members seamlessly.</p>
+      <h1>
+        <span className="title-line">RentTrack</span>
+        <span className="title-line">Dashboard</span>
+      </h1>
 
       {error ? (
-        <div className="glass-panel" style={{ borderColor: 'var(--danger)' }}>
-          <p style={{ color: 'var(--danger)' }}>{error}</p>
-        </div>
+        <p style={{ color: 'var(--status-overdue)' }}>{error}</p>
       ) : (
-        <div className="glass-panel">
-          <div className="data-table-container">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  {months.map(m => (
-                    <th key={m.monthYear}>{m.display}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {members?.map(member => (
-                  <tr key={member.id}>
-                    <td style={{ fontWeight: 600 }}>{member.name}</td>
-                    {months.map(m => {
-                      const rec = recordMap[member.id]?.[m.monthYear];
-                      const status = rec?.status || 'Pending';
-                      
-                      let badgeClass = 'status-pending';
-                      let icon = '🕒 ';
-                      if (status === 'Paid') {
-                        badgeClass = 'status-paid';
-                        icon = '✓ ';
-                      }
-                      if (status === 'Overdue') {
-                        badgeClass = 'status-overdue';
-                        icon = '⚠ ';
-                      }
-
-                      return (
-                        <td key={m.monthYear}>
-                          <span className={`status-badge ${badgeClass}`}>
-                            {icon}{status}
-                          </span>
-                        </td>
-                      );
-                    })}
-                  </tr>
+        <div className="data-table-container">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Member</th>
+                {months.map(m => (
+                  <th key={m.monthYear}>{m.display}</th>
                 ))}
-                {(!members || members.length === 0) && (
-                  <tr>
-                    <td colSpan={13} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                      No members found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              </tr>
+            </thead>
+            <tbody>
+              {members?.map(member => (
+                <tr key={member.id}>
+                  <td>{member.name}</td>
+                  {months.map(m => {
+                    const rec = recordMap[member.id]?.[m.monthYear];
+                    const status = rec?.status || 'Pending';
+                    
+                    let statusClass = 'status-pending';
+                    if (status === 'Paid') statusClass = 'status-paid';
+                    if (status === 'Overdue') statusClass = 'status-overdue';
+
+                    return (
+                      <td key={m.monthYear}>
+                        <span className={`status-text ${statusClass}`}>
+                          {status}
+                        </span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+              {(!members || members.length === 0) && (
+                <tr>
+                  <td colSpan={13} style={{ padding: '2rem 0', color: 'var(--text-muted)' }}>
+                    No members found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       )}
     </main>
