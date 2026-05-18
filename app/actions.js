@@ -4,7 +4,7 @@ import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 
 // Check if admin is authenticated (by checking PIN, though in real app we'd use cookies, here we'll pass the pin to the action)
-const ADMIN_PIN = process.env.ADMIN_PIN || '998768';
+const ADMIN_PIN = process.env.ADMIN_PIN || '111111';
 
 export async function verifyPin(pin) {
   return pin === ADMIN_PIN;
