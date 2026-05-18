@@ -11,18 +11,24 @@ export default function AdminPage() {
 
   const [members, setMembers] = useState([]);
   const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const now = new Date();
-  let startYear = now.getFullYear();
-  if (now.getMonth() < 5) startYear--;
-  const months = [];
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(startYear, 5 + i, 1);
-    months.push({
-      monthYear: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
-      display: d.toLocaleString('en-US', { month: 'short', year: '2-digit' })
-    });
-  }
+  const months2026 = [
+    { monthYear: '2026-06', display: 'Jun 26' },
+    { monthYear: '2026-07', display: 'Jul 26' },
+    { monthYear: '2026-08', display: 'Aug 26' },
+    { monthYear: '2026-09', display: 'Sep 26' },
+    { monthYear: '2026-10', display: 'Oct 26' },
+    { monthYear: '2026-11', display: 'Nov 26' },
+    { monthYear: '2026-12', display: 'Dec 26' }
+  ];
+  const months2027 = [
+    { monthYear: '2027-01', display: 'Jan 27' },
+    { monthYear: '2027-02', display: 'Feb 27' },
+    { monthYear: '2027-03', display: 'Mar 27' },
+    { monthYear: '2027-04', display: 'Apr 27' },
+    { monthYear: '2027-05', display: 'May 27' }
+  ];
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,6 +43,7 @@ export default function AdminPage() {
   };
 
   const loadData = async () => {
+    setLoading(true);
     const data = await getMembersAndRent();
     if (data.error) {
       setError(data.error);
@@ -44,6 +51,7 @@ export default function AdminPage() {
       setMembers(data.members || []);
       setRecords(data.records || []);
     }
+    setLoading(false);
   };
 
   const handleAddMember = async () => {
@@ -99,7 +107,7 @@ export default function AdminPage() {
           />
           {error && <p style={{ color: 'var(--danger)', fontSize: '0.875rem', textAlign: 'center' }}>{error}</p>}
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <Link href="/" className="btn btn-secondary" style={{ flex: 1, textAlign: 'center' }}>Back</Link>
+            <button type="button" onClick={() => window.location.href='/'} className="btn btn-secondary" style={{ flex: 1, textAlign: 'center' }}>Back</button>
             <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Login</button>
           </div>
         </form>
@@ -113,74 +121,85 @@ export default function AdminPage() {
     recordMap[r.member_id][r.month_year] = r;
   });
 
+  const renderMonthRow = (member, m) => {
+    const rec = recordMap[member.id]?.[m.monthYear];
+    const status = rec?.status || 'Pending';
+    
+    let badgeClass = 'status-pending';
+    let icon = '🕒 ';
+    if (status === 'Paid') {
+      badgeClass = 'status-paid';
+      icon = '✓ ';
+    }
+    if (status === 'Overdue') {
+      badgeClass = 'status-overdue';
+      icon = '⚠ ';
+    }
+
+    return (
+      <tr key={m.monthYear}>
+        <td style={{ color: 'var(--text-main)', fontWeight: 500 }}>{m.display}</td>
+        <td>
+          <span 
+            className={`status-badge ${badgeClass}`} 
+            style={{ cursor: 'pointer', transition: 'transform 0.1s' }}
+            onClick={() => handleStatusClick(member.id, m.monthYear, status)}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            {icon}{status}
+          </span>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <main className="container">
       <div className="navbar">
         <h1 style={{ margin: 0 }}>Admin Dashboard</h1>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <button className="btn btn-primary" onClick={handleAddMember}>+ Add Member</button>
-          <Link href="/" className="btn btn-secondary">Public View</Link>
         </div>
       </div>
+      
+      {loading && <div style={{ textAlign: 'center', margin: '2rem 0' }}>Loading data...</div>}
 
-      <div className="glass-panel">
-        <p style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>
-          Click on any status badge to toggle between Pending, Overdue, and Paid. Click on the ✎ or × to edit or delete members.
-        </p>
-        <div className="data-table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Member</th>
-                {months.map(m => (
-                  <th key={m.monthYear}>{m.display}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {members.map(member => (
-                <tr key={member.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontWeight: 600 }}>{member.name}</span>
-                      <button onClick={() => handleEditMember(member.id, member.name)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }} title="Edit">✎</button>
-                      <button onClick={() => handleDeleteMember(member.id)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer' }} title="Delete">×</button>
-                    </div>
-                  </td>
-                  {months.map(m => {
-                    const rec = recordMap[member.id]?.[m.monthYear];
-                    const status = rec?.status || 'Pending';
-                    
-                    let badgeClass = 'status-pending';
-                    if (status === 'Paid') badgeClass = 'status-paid';
-                    if (status === 'Overdue') badgeClass = 'status-overdue';
-
-                    return (
-                      <td key={m.monthYear}>
-                        <span 
-                          className={`status-badge ${badgeClass}`} 
-                          style={{ cursor: 'pointer', transition: 'transform 0.1s' }}
-                          onClick={() => handleStatusClick(member.id, m.monthYear, status)}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                          {status}
-                        </span>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-              {members.length === 0 && (
+      <div className="members-grid">
+        {members.map(member => (
+          <div key={member.id} className="glass-panel member-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h2 className="member-title" style={{ margin: 0 }}>{member.name}</h2>
+              <div>
+                <button onClick={() => handleEditMember(member.id, member.name)} className="icon-btn" title="Edit">✎</button>
+                <button onClick={() => handleDeleteMember(member.id)} className="icon-btn danger-icon" title="Delete">×</button>
+              </div>
+            </div>
+            <table className="vertical-table">
+              <thead>
                 <tr>
-                  <td colSpan={13} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                    No members yet. Click "+ Add Member" to get started.
-                  </td>
+                  <th>Month</th>
+                  <th>Status</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                <tr className="year-header">
+                  <td colSpan="2">Year 2026</td>
+                </tr>
+                {months2026.map(m => renderMonthRow(member, m))}
+                <tr className="year-header">
+                  <td colSpan="2">Year 2027</td>
+                </tr>
+                {months2027.map(m => renderMonthRow(member, m))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+        {members.length === 0 && !loading && (
+          <div className="glass-panel" style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+            No members yet. Click "+ Add Member" to get started.
+          </div>
+        )}
       </div>
     </main>
   );
