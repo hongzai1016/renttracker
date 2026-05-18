@@ -99,9 +99,10 @@ export default function AdminPage() {
           <input 
             type="password" 
             className="input" 
-            placeholder="PIN" 
+            placeholder="6-Digit PIN" 
             value={pin} 
-            onChange={(e) => setPin(e.target.value)} 
+            maxLength={6}
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} 
             autoFocus 
           />
           {error && <p style={{ color: 'var(--status-overdue)', fontSize: '0.875rem' }}>{error}</p>}
