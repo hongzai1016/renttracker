@@ -64,7 +64,7 @@ export default async function Dashboard() {
 
                     return (
                       <td key={m.monthYear}>
-                        <span className={`status-text ${statusClass}`}>
+                        <span className={`status-badge ${statusClass}`}>
                           {status}
                         </span>
                       </td>

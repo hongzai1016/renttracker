@@ -13,9 +13,25 @@
   --accent-blue-dark: #8cc0eb;
 
   /* Status Colors */
-  --status-pending: #a8a29e;
-  --status-paid: #8cc0eb;
-  --status-overdue: #f87171;
+  --status-pending-bg: #fef08a;
+  --status-pending-text: #854d0e;
+  --status-paid-bg: #dcfce7;
+  --status-paid-text: #166534;
+  --status-overdue-bg: #fee2e2;
+  --status-overdue-text: #991b1b;
+}
+
+[data-theme="dark"] {
+  --bg-main: #111827;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --border-light: #374151;
+  --status-pending-bg: rgba(133, 77, 14, 0.4);
+  --status-pending-text: #fde047;
+  --status-paid-bg: rgba(22, 101, 52, 0.4);
+  --status-paid-text: #86efac;
+  --status-overdue-bg: rgba(153, 27, 27, 0.4);
+  --status-overdue-text: #fca5a5;
 }
 
 * {
@@ -81,7 +97,7 @@ p.subtitle {
 
 .btn-primary {
   background: var(--text-main);
-  color: white;
+  color: var(--bg-main);
 }
 
 .btn-primary:hover {
@@ -157,20 +173,56 @@ p.subtitle {
   color: var(--text-main);
   font-weight: 500;
   padding-right: 1.5rem;
+  box-shadow: inset -1px 0 0 var(--border-light), 2px 0 5px rgba(0,0,0,0.02);
 }
 
-/* Status Text Styles (No Backgrounds) */
-.status-text {
+[data-theme="dark"] .data-table th:first-child,
+[data-theme="dark"] .data-table td:first-child {
+  box-shadow: inset -1px 0 0 var(--border-light), 2px 0 5px rgba(0,0,0,0.3);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.1s;
 }
-.status-text:hover {
-  opacity: 0.7;
+.status-badge:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
 }
 
-.status-paid { color: var(--status-paid); }
-.status-pending { color: var(--status-pending); }
-.status-overdue { color: var(--status-overdue); }
+.status-paid { background-color: var(--status-paid-bg); color: var(--status-paid-text); }
+.status-pending { background-color: var(--status-pending-bg); color: var(--status-pending-text); }
+.status-overdue { background-color: var(--status-overdue-bg); color: var(--status-overdue-text); }
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--border-light);
+  border: 1px solid var(--text-muted);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.2s;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1);
+}
 
 /* Utility */
 .icon-btn {

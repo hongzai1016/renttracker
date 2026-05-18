@@ -79,12 +79,12 @@ export default function AdminPage() {
   const cycleStatus = (currentStatus) => {
     if (currentStatus === 'Paid') return 'Pending';
     if (currentStatus === 'Pending') return 'Overdue';
-    return 'Paid'; 
+    return 'Paid';
   };
 
   const handleStatusClick = async (memberId, monthYear, currentStatus) => {
     const newStatus = cycleStatus(currentStatus);
-    await updateRentStatus(pin, memberId, monthYear, newStatus, 0);
+    await updateRentStatus(pin, memberId, monthYear, newStatus);
     loadData();
   };
 
@@ -96,18 +96,18 @@ export default function AdminPage() {
             <h1>Admin Access</h1>
             <p className="subtitle" style={{ margin: '0' }}>Enter PIN to continue</p>
           </div>
-          <input 
-            type="password" 
-            className="input" 
-            placeholder="6-Digit PIN" 
-            value={pin} 
+          <input
+            type="password"
+            className="input"
+            placeholder="6-Digit PIN"
+            value={pin}
             maxLength={6}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))} 
-            autoFocus 
+            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+            autoFocus
           />
           {error && <p style={{ color: 'var(--status-overdue)', fontSize: '0.875rem' }}>{error}</p>}
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button type="button" onClick={() => window.location.href='/'} className="btn btn-secondary" style={{ flex: 1 }}>Back</button>
+            <button type="button" onClick={() => window.location.href = '/'} className="btn btn-secondary" style={{ flex: 1 }}>Back</button>
             <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Login</button>
           </div>
         </form>
@@ -130,7 +130,7 @@ export default function AdminPage() {
         </h1>
         <button className="btn btn-primary" onClick={handleAddMember}>+ Add</button>
       </div>
-      
+
       {loading && <div style={{ marginBottom: '1rem', color: 'var(--text-muted)' }}>Loading data...</div>}
 
       <div className="data-table-container">
@@ -156,15 +156,15 @@ export default function AdminPage() {
                 {months.map(m => {
                   const rec = recordMap[member.id]?.[m.monthYear];
                   const status = rec?.status || 'Pending';
-                  
+
                   let statusClass = 'status-pending';
                   if (status === 'Paid') statusClass = 'status-paid';
                   if (status === 'Overdue') statusClass = 'status-overdue';
 
                   return (
                     <td key={m.monthYear}>
-                      <span 
-                        className={`status-text ${statusClass}`} 
+                      <span
+                        className={`status-badge ${statusClass}`}
                         onClick={() => handleStatusClick(member.id, m.monthYear, status)}
                       >
                         {status}

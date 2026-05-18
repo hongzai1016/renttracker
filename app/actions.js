@@ -54,14 +54,14 @@ export async function deleteMember(pin, id) {
   revalidatePath('/admin');
 }
 
-export async function updateRentStatus(pin, member_id, month_year, status, amount) {
+export async function updateRentStatus(pin, member_id, month_year, status) {
   if (pin !== ADMIN_PIN) throw new Error("Unauthorized");
   
   await sql`
-    INSERT INTO rent_records (member_id, month_year, status, amount)
-    VALUES (${member_id}, ${month_year}, ${status}, ${amount})
+    INSERT INTO rent_records (member_id, month_year, status)
+    VALUES (${member_id}, ${month_year}, ${status})
     ON CONFLICT (member_id, month_year) 
-    DO UPDATE SET status = EXCLUDED.status, amount = EXCLUDED.amount
+    DO UPDATE SET status = EXCLUDED.status
   `;
   revalidatePath('/');
   revalidatePath('/admin');
