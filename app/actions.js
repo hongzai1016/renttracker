@@ -17,8 +17,19 @@ export async function getMembersAndRent() {
     
     return { members, records, error: null };
   } catch (e) {
-    console.error(e);
-    return { members: [], records: [], error: 'Failed to fetch data. Is the database initialized?' };
+    console.log("Database fetch error, attempting to initialize tables...");
+    
+    try {
+      const { initDb } = await import('../lib/db');
+      await initDb();
+      
+      const { rows: members } = await sql`SELECT * FROM members ORDER BY created_at ASC`;
+      const { rows: records } = await sql`SELECT * FROM rent_records`;
+      return { members, records, error: null };
+    } catch (e2) {
+      console.error(e2);
+      return { members: [], records: [], error: 'Failed to fetch data. Is the database initialized?' };
+    }
   }
 }
 
